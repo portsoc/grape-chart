@@ -22,6 +22,12 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
 
   const groupArray = Array.from(groups.entries());
 
+  // todo layout effect to widen and position tooltips
+
+  // todo beside props add options for sizing
+
+  // todo use graph-chart.ts inside here to do the positioning
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
