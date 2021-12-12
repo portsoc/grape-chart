@@ -3,22 +3,26 @@ import './GrapeChart.css';
 
 import * as types from '../lib/types';
 
-export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
-  const height = 600;
-  const groupSpacing = 300;
-  const zeroGroupsWidth = 70;
-  const tooltipPadding = 20;
-  const tooltipMinWidth = 150;
-  const firstGroup = 210;
-  const numberOfColours = 7;
+const DEFAULT_OPTIONS: types.GrapeChartOptions = {
+  height: 600,
+  groupSpacing: 300,
+  zeroGroupsWidth: 70,
+  tooltipPadding: 20,
+  tooltipMinWidth: 150,
+  firstGroup: 210,
+  numberOfColours: 7,
+};
 
+export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
   const {
     groups,
     tickVals,
   } = props;
 
-  const width = zeroGroupsWidth + groups.size * groupSpacing;
-  const tooltipWidth = tooltipPadding + tooltipMinWidth;
+  const opts = { ...DEFAULT_OPTIONS, ...props.options };
+
+  const width = opts.zeroGroupsWidth + groups.size * opts.groupSpacing;
+  const tooltipWidth = opts.tooltipPadding + opts.tooltipMinWidth;
 
   const groupArray = Array.from(groups.entries());
 
@@ -32,9 +36,9 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className="grapechart"
-      viewBox={`0 0 ${width} ${height}`}
+      viewBox={`0 0 ${width} ${opts.height}`}
       width={width}
-      height={height}
+      height={opts.height}
       version="1.1"
     >
       <g className="axes">
@@ -58,7 +62,7 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
           <React.Fragment key={group}>
             <g
               className={`group ${withLegend ? 'with-legend' : ''}`}
-              transform={`translate(${firstGroup + groupSpacing * index}, ${0})`}
+              transform={`translate(${opts.firstGroup + opts.groupSpacing * index}, ${0})`}
             >
               <g>
                 <line className="xaxis" x1="-150" x2="150" />
@@ -69,7 +73,7 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
                   return (
                     <circle
                       key={expIndex}
-                      className={`experiment grape c${index % numberOfColours}`}
+                      className={`experiment grape c${index % opts.numberOfColours}`}
                       r={radius}
                       transform={`translate(${grapeX},${grapeY})`}
                     />
@@ -94,7 +98,7 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
           <g
             key={group}
             className="group tooltips"
-            transform={`translate(${firstGroup + groupSpacing * index}, ${0})`}
+            transform={`translate(${opts.firstGroup + opts.groupSpacing * index}, ${0})`}
           >
             <g>
               { dataGroup.grapeData.map((grape, grapeIndex) => {
@@ -109,7 +113,7 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
                 const wtText = `${((exp.weight * 100) / dataGroup.totalWeight).toFixed(2)}%`;
                 const ciText = `${Math.exp(exp.lowerConfidenceLimit).toFixed(2)}, ${Math.exp(exp.upperConfidenceLimit).toFixed(2)}`;
 
-                const isTopHalf = grapeY > height / 2;
+                const isTopHalf = grapeY > opts.height / 2;
                 return (
                   <React.Fragment key={grapeIndex}>
                     <g

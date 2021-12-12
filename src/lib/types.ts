@@ -26,4 +26,15 @@ export type Tick = [number, number, number];
 export interface GrapeChartProps {
   groups: Map<string, DataGroup>,
   tickVals: Tick[],
+  options?: GrapeChartOptions,
+}
+
+export interface GrapeChartOptions {
+  height: number,
+  groupSpacing: number,
+  zeroGroupsWidth: number,
+  tooltipPadding: number,
+  tooltipMinWidth: number,
+  firstGroup: number,
+  numberOfColours: number,
 }
