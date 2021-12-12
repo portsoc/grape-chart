@@ -1,0 +1,29 @@
+{
+  "name": "grape-chart",
+  "version": "0.0.1",
+  "description": "A library and a Web app that produces Grape Charts",
+  "main": "index.js",
+  "scripts": {
+    "start": "PORT=8080 parcel serve src/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.11",
+    "eslint": "^7.32.0",
+    "eslint-config-portsoc": "^0.8.2",
+    "eslint-config-portsoc-ts": "^0.8.5",
+    "parcel": "^2.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "typescript": "^4.5.2"
+  },
+  "eslintConfig": {
+    "extends": "portsoc-ts",
+    "root": true,
+    "env": {
+      "browser": true
+    }
+  }
+}
