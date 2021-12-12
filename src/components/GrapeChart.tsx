@@ -3,37 +3,30 @@ import './GrapeChart.css';
 
 import * as types from '../lib/types';
 
-interface GrapeChartProps {
-  viewBox: string,
-  width: number,
-  height: number,
-  groups: string[],
-  dataGroups: types.DataGroup[],
-  firstGroup: number,
-  groupSpacing: number,
-  numberOfColours: number,
-  tooltipWidth: number,
-  tickVals: [number, number, number][],
-}
+export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
+  const height = 600;
+  const groupSpacing = 300;
+  const zeroGroupsWidth = 70;
+  const tooltipPadding = 20;
+  const tooltipMinWidth = 150;
+  const firstGroup = 210;
+  const numberOfColours = 7;
 
-function GrapeChart(props: GrapeChartProps): JSX.Element {
   const {
-    viewBox,
-    width,
-    height,
     groups,
-    dataGroups,
-    firstGroup,
-    groupSpacing,
-    numberOfColours,
-    tooltipWidth,
     tickVals,
   } = props;
+
+  const width = zeroGroupsWidth + groups.size * groupSpacing;
+  const tooltipWidth = tooltipPadding + tooltipMinWidth;
+
+  const groupArray = Array.from(groups.entries());
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className="grapechart"
-      viewBox={viewBox}
+      viewBox={`0 0 ${width} ${height}`}
       width={width}
       height={height}
       version="1.1"
@@ -52,29 +45,20 @@ function GrapeChart(props: GrapeChartProps): JSX.Element {
       </g>
 
       { /* Displaying circles and guidelines */ }
-      { groups.map((group, index) => {
-        const dataGroup = dataGroups[index];
-        const withPosButton = index === groups.length - 1;
+      { groupArray.map(([group, dataGroup], index) => {
         const withLegend = index === 0;
-        const { guidelineY, data } = dataGroup;
+        const { guidelineY, grapeData } = dataGroup;
         return (
           <React.Fragment key={group}>
             <g
-              className={`group ${withPosButton ? 'with-pos-button' : ''} ${withLegend ? 'with-legend' : ''}`}
-              transform={`translate(${+firstGroup + groupSpacing * index}, ${0})`}
+              className={`group ${withLegend ? 'with-legend' : ''}`}
+              transform={`translate(${firstGroup + groupSpacing * index}, ${0})`}
             >
               <g>
                 <line className="xaxis" x1="-150" x2="150" />
-                <g className="guideline" transform={`translate(${0},${guidelineY})`}>
-                  <line className="guideline" x1="-142.5" x2="142.5" />
-                  <g className="legend">
-                    <text>weighted</text>
-                    <text>mean</text>
-                  </g>
-                </g>
                 <line className="trunk" x1="0" x2="0" y2="500" />
                 <text className="label">{ group }</text>
-                { data.map((exp, expIndex) => {
+                { grapeData.map((exp, expIndex) => {
                   const { radius, grapeX, grapeY } = exp;
                   return (
                     <circle
@@ -85,7 +69,13 @@ function GrapeChart(props: GrapeChartProps): JSX.Element {
                     />
                   );
                 }) }
-
+                <g className="guideline" transform={`translate(${0},${guidelineY})`}>
+                  <line className="guideline" x1="-142.5" x2="142.5" />
+                  <g className="legend">
+                    <text>weighted</text>
+                    <text>mean</text>
+                  </g>
+                </g>
               </g>
             </g>
           </React.Fragment>
@@ -93,16 +83,15 @@ function GrapeChart(props: GrapeChartProps): JSX.Element {
       }) }
 
       { /* Displaying tootltips after circles so that z-index > circles */ }
-      { groups.map((group, index) => {
-        const dataGroup = dataGroups[index];
+      { groupArray.map(([group, dataGroup], index) => {
         return (
           <g
             key={group}
             className="group tooltips"
-            transform={`translate(${+firstGroup + groupSpacing * index}, ${0})`}
+            transform={`translate(${firstGroup + groupSpacing * index}, ${0})`}
           >
             <g>
-              { dataGroup.data.map((grape, grapeIndex) => {
+              { dataGroup.grapeData.map((grape, grapeIndex) => {
                 const {
                   radius,
                   grapeX,
@@ -147,5 +136,3 @@ function GrapeChart(props: GrapeChartProps): JSX.Element {
     </svg>
   );
 }
-
-export default GrapeChart;

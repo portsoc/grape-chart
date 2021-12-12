@@ -160,6 +160,10 @@ svg.grapechart .group:not(.with-legend) g.guideline .legend {
 
 svg.grapechart .group g.guideline .legend text {
   font-size: 10px;
+
+  --r: 4px;
+
+  text-shadow: 0 0 var(--r) white, 0 0 var(--r) white, 0 0 var(--r) white, 0 0 var(--r) white, 0 0 var(--r) white, 0 0 var(--r) white, 0 0 var(--r) white;
 }
 
 svg.grapechart .group g.guideline .legend text:nth-child(1) {
@@ -168,22 +172,4 @@ svg.grapechart .group g.guideline .legend text:nth-child(1) {
 
 svg.grapechart .group g.guideline .legend text:nth-child(2) {
   transform: translate(-127.5px, -5px) rotate(-90deg);
-}
-
-svg.grapechart .positioningbutton {
-  transform: translate(140px, 20px);
-  opacity: 0.2;
-}
-
-svg.grapechart .positioningbutton:hover {
-  opacity: 1;
-  cursor: pointer;
-}
-
-svg.grapechart .group:not(.with-pos-button) .positioningbutton {
-  display: none;
-}
-
-svg.grapechart .positioningbutton:not(:hover) line {
-  display: none;
 }

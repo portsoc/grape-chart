@@ -5,14 +5,13 @@ export interface ExperimentData {
   weight: number,
   lowerConfidenceLimit: number,
   upperConfidenceLimit: number,
-  group?: string,
+  group: string,
 }
 
 export interface DataGroup {
-  data: GrapeData[],
+  grapeData: GrapeData[],
   guidelineY: number,
   totalWeight: number,
-  invalid?: boolean,
 }
 
 export interface GrapeData {
@@ -20,4 +19,11 @@ export interface GrapeData {
   grapeX: number,
   grapeY: number,
   exp: ExperimentData,
+}
+
+export type Tick = [number, number, number];
+
+export interface GrapeChartProps {
+  groups: Map<string, DataGroup>,
+  tickVals: Tick[],
 }
