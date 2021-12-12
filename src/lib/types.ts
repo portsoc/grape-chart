@@ -24,17 +24,25 @@ export interface GrapeData {
 export type Tick = [number, number, number];
 
 export interface GrapeChartProps {
+  data: ExperimentData[],
+  options?: GrapeChartOptions,
+}
+
+export interface GrapeChartData {
   groups: Map<string, DataGroup>,
   tickVals: Tick[],
-  options?: GrapeChartOptions,
 }
 
 export interface GrapeChartOptions {
   height: number,
+  graphHeight: number,
   groupSpacing: number,
   zeroGroupsWidth: number,
+  firstGroup: number,
   tooltipPadding: number,
   tooltipMinWidth: number,
-  firstGroup: number,
   numberOfColours: number,
+  minGrapeSize: number,
+  maxGrapeSize: number,
+  grapeSpacing: number,
 }
