@@ -6,7 +6,7 @@
     "start": "PORT=8080 parcel serve src/index.html",
     "build": "rm -rf docs; parcel build src/index.html"
   },
-  "author": "",
+  "author": "Jacek Kopecky <jacek@jacek.cz>",
   "license": "ISC",
   "dependencies": {
     "react": "^17.0.2",
