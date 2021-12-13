@@ -19,7 +19,7 @@ export default function App(): JSX.Element {
       <Instructions />
       <textarea placeholder="paste your spreadsheet data here" onChange={(e) => setInputData(e.target.value)}/>
       <GrapeChart data={parsedData} />
-      <footer>Grape Chart Generator, conceived by Dr Hartmut Blank (University of Portsmouth)</footer>
+      <footer>Grape Chart Generator, conceived by&nbsp;Dr&nbsp;Hartmut Blank (University&nbsp;of&nbsp;Portsmouth, &copy;&nbsp;2021)</footer>
     </>
   );
 }

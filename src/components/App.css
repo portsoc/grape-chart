@@ -2,10 +2,21 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 main {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+main > :not(svg) {
+  width: 30rem;
 }
 
 details {
@@ -41,8 +52,8 @@ svg {
   margin-top: 1rem;
 }
 
-main > p,
-main > details,
-main > textarea {
-  width: 30rem;
+footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  margin-bottom: 1rem;
 }
