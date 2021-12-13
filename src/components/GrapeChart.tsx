@@ -9,7 +9,7 @@ import PositionedCircles from '../lib/PositionedCircles';
 const DEFAULT_OPTIONS: types.GrapeChartOptions = {
   // some of these defaults are repeated in the CSS so can't easily be changed - todo do something about it
   height: 600,
-  graphHeight: 500,
+  graphHeight: 540,
   groupSpacing: 300,
   zeroGroupsWidth: 70,
   tooltipPadding: 20,
@@ -53,7 +53,7 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
       ref={svgRef}
     >
       <g className="axes">
-        <line className="yaxis" x1="0" x2="0" y2="500" />
+        <line className="yaxis" x1="0" x2="0" y2={opts.graphHeight} />
 
         { tickVals.map((tickVal, index) => (
           <g key={index} className="tick" transform={`translate(${0},${tickVal[2]})`}>
@@ -62,7 +62,6 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
           </g>
         )) }
         <text className="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
-        <text className="title" transform="translate(-40,-530)">Grape Chart</text>
       </g>
 
       { /* Displaying circles and guidelines */ }
