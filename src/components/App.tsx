@@ -8,15 +8,17 @@ import * as types from '../lib/types';
 
 import testData from '../../test-data.json';
 
-const testDataText = testDataIntoText(testData);
-
 export default function App(): JSX.Element {
+  const [inputData, setInputData] = React.useState<string>('');
+
+  const parsedData = inputData.trim() ? parse(inputData) : testData;
+
   return (
     <>
-      <h1>Grape Chart</h1>
+      <h1>Grape Chart Generator</h1>
       <Instructions />
-      <textarea placeholder="paste your spreadsheet data here" value={testDataText}/>
-      <GrapeChart data={testData} />
+      <textarea placeholder="paste your spreadsheet data here" onChange={(e) => setInputData(e.target.value)}/>
+      <GrapeChart data={parsedData} />
     </>
   );
 }
@@ -63,28 +65,58 @@ function Instructions(): JSX.Element {
   );
 }
 
-function testDataIntoText(data: types.ExperimentData[]): string {
-  const lines: unknown[][] = [];
-  lines.push([
-    'paper',
-    'experiment',
-    'oddsRatio',
-    'weight',
-    'lcl',
-    'ucl',
-    'group',
-  ]);
-  for (const line of data) {
-    lines.push([
-      line.paper,
-      line.experiment,
-      line.oddsRatio.toPrecision(4),
-      line.weight.toPrecision(4),
-      line.lowerConfidenceLimit.toPrecision(4),
-      line.upperConfidenceLimit.toPrecision(4),
-      line.group,
-    ]);
+function parse(input: string): types.ExperimentData[] {
+  const lines = input.trim().split('\n');
+
+  const retval: types.ExperimentData[] = [];
+
+  for (const line of lines) {
+    const [
+      rawPaper,
+      rawExperiment,
+      rawOddsRatio,
+      rawWeight,
+      rawLowerConfidenceLimit,
+      rawUpperConfidenceLimit,
+      rawGroup,
+    ] = line.split('\t');
+
+    const paper = rawPaper ?? '';
+    const experiment = rawExperiment ?? '';
+    const oddsRatio = parseNumber(rawOddsRatio);
+    const weight = parseNumber(rawWeight);
+    const lowerConfidenceLimit = parseNumber(rawLowerConfidenceLimit);
+    const upperConfidenceLimit = parseNumber(rawUpperConfidenceLimit);
+    const group = rawGroup ?? '';
+
+    if (oddsRatio == null ||
+        weight == null ||
+        lowerConfidenceLimit == null ||
+        upperConfidenceLimit == null) {
+      continue;
+    }
+
+    retval.push({
+      paper,
+      experiment,
+      oddsRatio,
+      weight,
+      lowerConfidenceLimit,
+      upperConfidenceLimit,
+      group,
+    });
   }
 
-  return lines.map(line => line.join('\t')).join('\n');
+  return retval;
+}
+
+function parseNumber(str?: string) {
+  if (!str) return null;
+
+  const num = Number(str);
+
+  // remove NaNs and infinities
+  if (Number.isNaN(0 * num)) return null;
+
+  return num;
 }
