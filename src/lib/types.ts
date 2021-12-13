@@ -41,6 +41,7 @@ export interface GrapeChartOptions {
   firstGroup: number,
   tooltipPadding: number,
   tooltipMinWidth: number,
+  tooltipValueOffset: number,
   numberOfColours: number,
   minGrapeSize: number,
   maxGrapeSize: number,

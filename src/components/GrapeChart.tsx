@@ -7,12 +7,14 @@ import MultiMap from '../lib/MultiMap';
 import PositionedCircles from '../lib/PositionedCircles';
 
 const DEFAULT_OPTIONS: types.GrapeChartOptions = {
+  // some of these defaults are repeated in the CSS so can't easily be changed - todo do something about it
   height: 600,
   graphHeight: 500,
   groupSpacing: 300,
   zeroGroupsWidth: 70,
   tooltipPadding: 20,
-  tooltipMinWidth: 150,
+  tooltipMinWidth: 50,
+  tooltipValueOffset: 50,
   firstGroup: 210,
   numberOfColours: 7,
   minGrapeSize: 5,
@@ -35,6 +37,11 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
 
   // todo layout effect to widen and position tooltips
 
+  const svgRef = React.useRef<SVGSVGElement>(null);
+
+  // make sure all tooltips are positioned so they are visible and the box is as big as the content
+  React.useLayoutEffect(positionTooltips);
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -43,6 +50,7 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
       width={width}
       height={opts.height}
       version="1.1"
+      ref={svgRef}
     >
       <g className="axes">
         <line className="yaxis" x1="0" x2="0" y2="500" />
@@ -130,7 +138,6 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
       const wtText = `${((exp.weight * 100) / dataGroup.totalWeight).toFixed(2)}%`;
       const ciText = `${Math.exp(exp.lowerConfidenceLimit).toFixed(2)}, ${Math.exp(exp.upperConfidenceLimit).toFixed(2)}`;
 
-      const isTopHalf = Math.abs(grapeY) > opts.graphHeight / 2;
       return (
         <g
           key={grapeIndex}
@@ -141,20 +148,69 @@ export default function GrapeChart(props: types.GrapeChartProps): JSX.Element {
             className="grape"
             r={radius}
           />
-          <g className={`tooltip ${isTopHalf ? 'tophalf' : ''}`}>
+          <g className="tooltip">
             <rect height="103" width={tooltipWidth} />
             <text className="paper">{ exp.paper || 'n/a' }</text>
             <text className="exp  ">{ exp.experiment || 'n/a' }</text>
-            <text className="or   ">{ orText }</text>
-            <text className="wt   ">{ wtText }</text>
-            <text className="ci   ">{ ciText }</text>
             <text className="_or  ">OR:</text>
             <text className="_wt  ">Weight:</text>
             <text className="_ci  ">95% CI:</text>
+            <text className="or   " data-offset={opts.tooltipValueOffset}>{ orText }</text>
+            <text className="wt   " data-offset={opts.tooltipValueOffset}>{ wtText }</text>
+            <text className="ci   " data-offset={opts.tooltipValueOffset}>{ ciText }</text>
           </g>
         </g>
       );
     }
+  }
+
+  function positionTooltips() {
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const svgBox = svg.getBoundingClientRect();
+
+    const tooltips = svg.querySelectorAll<SVGElement>('.tooltip');
+    for (const tooltip of tooltips) {
+      const rect = tooltip.querySelector('rect');
+      if (!rect) continue;
+
+      widenRectToText(tooltip, rect);
+      positionAboveOrBelowCircle(tooltip, rect, svgBox);
+    }
+  }
+
+  function widenRectToText(tooltip: Element, rect: SVGRectElement) {
+    let boxWidth = opts.tooltipMinWidth;
+    for (const text of tooltip.querySelectorAll('text')) {
+      let w = text.getBBox().width;
+      if (text.dataset.offset) w += Number(text.dataset.offset);
+      if (w > boxWidth) boxWidth = w;
+    }
+
+    rect.setAttribute('width', String(boxWidth + opts.tooltipPadding));
+  }
+
+  function positionAboveOrBelowCircle(tooltip: SVGElement, rect: SVGRectElement, svgBox: DOMRect) {
+    // the tooltip's top-left corner is in the center of the circle
+    // move the tooltip's center below or above the circle (depending on where in the SVG the circle is vertically),
+    // but constrain it so it doesn't go outside the SVG's sides
+
+    const box = rect.getBoundingClientRect();
+
+    const leftSpace = box.left - svgBox.left - 2;
+    const rightSpace = svgBox.right - box.left - 2;
+
+    let x = -box.width / 2;
+    if (x + box.width > rightSpace) x = rightSpace - box.width;
+    if (x < -leftSpace) x = -leftSpace;
+
+    const isTopHalf = box.top < (svgBox.top + svgBox.height / 2);
+    const y = isTopHalf
+      ? opts.maxGrapeSize + opts.grapeSpacing * 2
+      : -box.height - opts.maxGrapeSize - opts.grapeSpacing * 2;
+
+    tooltip.setAttribute('transform', `translate(${x},${y})`);
   }
 }
 
@@ -283,7 +339,6 @@ function getGrapeChartData(data: types.ExperimentData[], opts: types.GrapeChartO
   }
 
   function getGrapeRadius(wt: number) {
-    if (wt == null) return opts.minGrapeSize;
     return (Math.sqrt(wt) - minWt) * wtRatio + opts.minGrapeSize;
   }
 

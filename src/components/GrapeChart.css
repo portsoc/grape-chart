@@ -105,16 +105,8 @@ svg.grapechart .tooltips .experiment .grape:hover {
   stroke: black;
 }
 
-svg.grapechart .tooltip {
-  transform: translate(-60px, -120px);
-}
-
 svg.grapechart .tooltips .experiment .grape:not(:hover) + .tooltip {
   display: none;
-}
-
-svg.grapechart .tooltip.tophalf {
-  transform: translate(-60px, 17px);
 }
 
 svg.grapechart .tooltip text.paper {
