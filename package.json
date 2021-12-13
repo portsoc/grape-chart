@@ -4,7 +4,7 @@
   "description": "A library and a Web app that produces Grape Charts",
   "scripts": {
     "start": "PORT=8080 parcel serve src/index.html",
-    "build": "PORT=8080 parcel build src/index.html"
+    "build": "rm -rf docs; parcel build src/index.html"
   },
   "author": "",
   "license": "ISC",
